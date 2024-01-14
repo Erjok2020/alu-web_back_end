@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+'''Task 7
+'''
 from typing import Union, Tuple
 
 
