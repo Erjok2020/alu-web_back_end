@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''Task 2
-'''
+"""Task 2
+"""
 import asyncio
 import time
 
