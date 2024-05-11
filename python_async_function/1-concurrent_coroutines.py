@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''Task 1
-'''
+"""Task 1
+"""
 import asyncio
 from typing import List
 
