@@ -1,4 +1,3 @@
-
 import loadBalancer from './7-load_balancer.js';
 
 const ukSuccess = 'Downloading from UK is faster';
