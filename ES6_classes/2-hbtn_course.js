@@ -1,4 +1,3 @@
-
 class HolbertonCourse {
   constructor(name, length, students) {
     this.name = name;
