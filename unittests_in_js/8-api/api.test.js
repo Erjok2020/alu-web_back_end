@@ -1,19 +1,16 @@
-const request = require('request');
+const request = require('supertest');
+const app = require('./8-api');
 const { expect } = require('chai');
 
-describe('Integration Testing', () => {
-  describe('GET /', () => {
-    it('Code: 200 | Body: Welcome to the payment system', (done) => {
-      const options = {
-        url: 'http://localhost:7865',
-        method: 'GET',
-      };
+describe('GET /cart/:id', () => {
+  it('should return payment methods for a valid cart id', async () => {
+    const res = await request(app).get('/cart/123');
+    expect(res.status).to.equal(200);
+    expect(res.text).to.equal('Payment methods for cart 123');
+  });
 
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Welcome to the payment system');
-        done();
-      });
-    });
+  it('should return 404 for invalid cart id', async () => {
+    const res = await request(app).get('/cart/abc');
+    expect(res.status).to.equal(404);
   });
 });

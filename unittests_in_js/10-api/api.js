@@ -1,33 +1,45 @@
 const express = require('express');
-
 const app = express();
-const port = 7865;
-
 app.use(express.json());
 
+const PORT = 7865;
+const validCarts = new Set([1, 2, 3, 4, 5]);
+
 app.get('/', (req, res) => {
-  res.end('Welcome to the payment system');
+  res.status(200).send('Welcome to the payment system');
 });
 
 app.get('/cart/:id([0-9]+)', (req, res) => {
-  res.end(`Payment methods for cart ${req.params.id}`);
+  const cartId = parseInt(req.params.id, 10);
+
+  if (validCarts.has(cartId)) {
+    res.status(200).send(`Payment methods for cart ${cartId}`);
+  } else {
+    res.status(404).send('Cart not found');
+  }
 });
 
 app.get('/available_payments', (req, res) => {
-  const obj = {
+  res.status(200).json({
     payment_methods: {
       credit_cards: true,
       paypal: false
     }
-  };
-  res.json(obj);
+  });
 });
 
 app.post('/login', (req, res) => {
-  const username = req.body.userName;
-  res.end(`Welcome ${username}`);
+  const { userName } = req.body;
+  
+  if (userName) {
+    res.status(200).send(`Welcome ${userName}`);
+  } else {
+    res.status(400).send('User name is required');
+  }
 });
 
-app.listen(port, () => {
-  console.log('API available on localhost port 7865');
+app.listen(PORT, () => {
+  console.log(`API available on localhost port ${PORT}`);
 });
+
+module.exports = app;

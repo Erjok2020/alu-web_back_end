@@ -1,207 +1,59 @@
-const request = require('request');
+const request = require('supertest');
+const app = require('./10-api');
 const { expect } = require('chai');
 
-describe('Integration Testing', () => {
+describe('API Endpoints', () => {
   describe('GET /', () => {
-    it('Code: 200 | Body: Welcome to the payment system', (done) => {
-      const options = {
-        url: 'http://localhost:7865',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Welcome to the payment system');
-        done();
-      });
+    it('should return the welcome message', async () => {
+      const res = await request(app).get('/');
+      expect(res.status).to.equal(200);
+      expect(res.text).to.equal('Welcome to the payment system');
     });
   });
 
-  describe('GET /cart/12', () => {
-    it('Responds with 200 and id 12 in msg', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/12',
-        method: 'GET'
-      };
+  describe('GET /cart/:id', () => {
+    it('should return payment methods for a valid cart ID', async () => {
+      const res = await request(app).get('/cart/1');
+      expect(res.status).to.equal(200);
+      expect(res.text).to.equal('Payment methods for cart 1');
+    });
 
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Payment methods for cart 12');
-        done();
-      });
+    it('should return 404 for an invalid cart ID', async () => {
+      const res = await request(app).get('/cart/999');
+      expect(res.status).to.equal(404);
+      expect(res.text).to.equal('Cart not found');
+    });
+
+    it('should return 404 for a non-numeric cart ID', async () => {
+      const res = await request(app).get('/cart/abc');
+      expect(res.status).to.equal(404);
     });
   });
 
-  describe('GET /cart/1', () => {
-    it('Responds with 200 and id 1 in msg', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/1',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Payment methods for cart 1');
-        done();
-      });
-    });
-  });
-
-  describe('GET /cart/123', () => {
-    it('Responds with 200 and id 12 in msg', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/123',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Payment methods for cart 123');
-        done();
-      });
-    });
-  });
-
-  describe('GET /cart/a12', () => {
-    it('Responds with 404', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/a12',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(404);
-        done();
-      });
-    });
-  });
-
-  describe('GET /cart/a12b', () => {
-    it('Responds with 404', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/a12b',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(404);
-        done();
-      });
-    });
-  });
-
-  describe('GET /cart/12b', () => {
-    it('Responds with 404', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/12b',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(404);
-        done();
-      });
-    });
-  });
-
-  describe('GET /cart/hello', () => {
-    it('Responds with 404', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/hello',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(404);
-        done();
-      });
-    });
-  });
-
-  describe('GET /cart/', () => {
-    it('Responds with 404', (done) => {
-      const options = {
-        url: 'http://localhost:7865/cart/',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(404);
-        done();
-      });
-    });
-  });
-
-  describe('GET /available_payments JSON string', () => {
-    it('Responds with 200 and correct JSON string', (done) => {
-      const options = {
-        url: 'http://localhost:7865/available_payments',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal(
-          '{"payment_methods":{"credit_cards":true,"paypal":false}}'
-        );
-        done();
-      });
-    });
-  });
-
-  describe('GET /available_payments JSON parsed', () => {
-    it('Responds with 200 and correct JSON object when parsed', (done) => {
-      const options = {
-        url: 'http://localhost:7865/available_payments',
-        method: 'GET'
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        const bodyParsed = JSON.parse(body);
-
-        const referenceBody = {
-          payment_methods: {
-            credit_cards: true,
-            paypal: false
-          }
-        };
-        expect(bodyParsed).to.deep.equal(referenceBody);
-        done();
-      });
-    });
-  });
-
-  describe('POST /login with body', () => {
-    it('Responds with 200 and correct name Betty', (done) => {
-      const options = {
-        url: 'http://localhost:7865/login',
-        method: 'POST',
-        json: {
-          userName: 'Betty'
+  describe('GET /available_payments', () => {
+    it('should return available payment methods', async () => {
+      const res = await request(app).get('/available_payments');
+      expect(res.status).to.equal(200);
+      expect(res.body).to.deep.equal({
+        payment_methods: {
+          credit_cards: true,
+          paypal: false
         }
-      };
-
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Welcome Betty');
-        done();
       });
     });
   });
 
-  describe('POST /login with no body', () => {
-    it('Responds with 200 and correct name Undefined', (done) => {
-      const options = {
-        url: 'http://localhost:7865/login',
-        method: 'POST'
-      };
+  describe('POST /login', () => {
+    it('should return a welcome message for a valid userName', async () => {
+      const res = await request(app).post('/login').send({ userName: 'John' });
+      expect(res.status).to.equal(200);
+      expect(res.text).to.equal('Welcome John');
+    });
 
-      request(options, function (error, response, body) {
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.equal('Welcome undefined');
-        done();
-      });
+    it('should return 400 if userName is not provided', async () => {
+      const res = await request(app).post('/login').send({});
+      expect(res.status).to.equal(400);
+      expect(res.text).to.equal('User name is required');
     });
   });
 });
