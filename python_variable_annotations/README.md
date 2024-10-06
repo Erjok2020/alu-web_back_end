@@ -1,1 +1,1 @@
-# This directory contains simple type annotation
+# This directory contains simple type annotations
