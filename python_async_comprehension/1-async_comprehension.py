@@ -12,3 +12,4 @@ async def async_comprehension() -> List[float]:
     '''Creates a list of 10 numbers from a 10-number generator.
     '''
     return [num async for num in async_generator()]
+
